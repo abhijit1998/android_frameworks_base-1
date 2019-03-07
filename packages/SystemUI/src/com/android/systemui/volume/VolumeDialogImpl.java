@@ -150,6 +150,8 @@ public class VolumeDialogImpl implements VolumeDialog {
     private boolean mShowing;
     private boolean mShowA11yStream;
 
+    private boolean mExpanded;
+
     private int mActiveStream;
     private int mPrevActiveStream;
     private boolean mAutomute = VolumePrefs.DEFAULT_ENABLE_AUTOMUTE;
@@ -254,6 +256,11 @@ public class VolumeDialogImpl implements VolumeDialog {
 
         mDialogRowsView = mDialog.findViewById(R.id.volume_dialog_rows);
         mRinger = mDialog.findViewById(R.id.ringer);
+        mExpandRowsView = mDialog.findViewById(R.id.expandable_indicator_container);
+        mExpandRows = mDialog.findViewById(R.id.expandable_indicator);
+            mRinger.setForegroundGravity(Gravity.RIGHT);
+            mExpandRows.setForegroundGravity(Gravity.RIGHT);
+            mExpandRows.setRotation(90);
         mRingerIcon = mRinger.findViewById(R.id.ringer_icon);
         mZenIcon = mRinger.findViewById(R.id.dnd_icon);
         mExpandRowsView = mDialog.findViewById(R.id.expandable_indicator_container);
@@ -380,6 +387,7 @@ public class VolumeDialogImpl implements VolumeDialog {
         }
     }
 
+<<<<<<< HEAD
     private void cleanExpandedRows() {
         for (int i = mRows.size() - 1; i >= 0; i--) {
             final VolumeRow row = mRows.get(i);
@@ -399,6 +407,12 @@ public class VolumeDialogImpl implements VolumeDialog {
         for (int i = 0; i < N; i++) {
             updateVolumeRowH(mRows.get(i));
         }
+=======
+    private void updateAllActiveRows() {
+        int N = mRows.size();
+        for (int i = 0; i < N; i++)
+            updateVolumeRowH(mRows.get(i));
+>>>>>>> 317c9f9186f... base: Redo expanded volume panel for 9.x
     }
 
     private VolumeRow getActiveRow() {
@@ -496,6 +510,15 @@ public class VolumeDialogImpl implements VolumeDialog {
         }
     }
 
+    private void cleanExpandRows() {
+        for(int i = mRows.size() - 1; i >= 0; i--) {
+            final VolumeRow row = mRows.get(i);
+            if (row.stream == AudioManager.STREAM_RING ||
+                    row.stream == AudioManager.STREAM_ALARM)
+                removeRow(row);
+        }
+    }
+
     public void initSettingsH() {
         mExpandRowsView.setVisibility(
                 mDeviceProvisionedController.isCurrentUserSetup() ? VISIBLE : GONE);
@@ -508,6 +531,7 @@ public class VolumeDialogImpl implements VolumeDialog {
             return true;
         });
         mExpandRows.setOnClickListener(v -> {
+<<<<<<< HEAD
             if (!mExpanded) {
                 addRow(AudioManager.STREAM_RING, R.drawable.ic_volume_ringer,
                         R.drawable.ic_volume_ringer_mute, true, false);
@@ -517,6 +541,17 @@ public class VolumeDialogImpl implements VolumeDialog {
                 mExpanded = true;
             } else {
                 cleanExpandedRows();
+=======
+            if(!mExpanded) {
+                addRow(AudioManager.STREAM_RING,
+                        R.drawable.ic_volume_notification, R.drawable.ic_volume_notification_mute, true, false);
+                addRow(AudioManager.STREAM_ALARM,
+                        R.drawable.ic_volume_alarm, R.drawable.ic_volume_alarm_mute, true, false);
+                updateAllActiveRows();
+                mExpanded = true;
+            } else {
+                cleanExpandRows();
+>>>>>>> 317c9f9186f... base: Redo expanded volume panel for 9.x
                 mExpanded = false;
             }
             mExpandRows.setExpanded(mExpanded);
@@ -692,6 +727,10 @@ public class VolumeDialogImpl implements VolumeDialog {
                 mSafetyWarning.dismiss();
             }
         }
+
+        cleanExpandRows();
+        mExpanded = false;
+        mExpandRows.setExpanded(mExpanded);
     }
 
     private boolean shouldBeVisibleH(VolumeRow row, VolumeRow activeRow) {
@@ -731,9 +770,14 @@ public class VolumeDialogImpl implements VolumeDialog {
         for (final VolumeRow row : mRows) {
             final boolean isActive = row == activeRow;
             final boolean shouldBeVisible = shouldBeVisibleH(row, activeRow);
+<<<<<<< HEAD
             if (!mExpanded) {
                 Util.setVisOrGone(row.view, shouldBeVisible);
             }
+=======
+            if (!mExpanded)
+                Util.setVisOrGone(row.view, shouldBeVisible);
+>>>>>>> 317c9f9186f... base: Redo expanded volume panel for 9.x
             if (row.view.isShown()) {
                 updateVolumeRowTintH(row, isActive);
             }
